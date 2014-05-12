@@ -15,23 +15,10 @@ package chinesesegmentation
 
 import (
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"testing"
 )
-
-func Test_New(t *testing.T) {
-	_, filename, _, ok := runtime.Caller(0)
-	if !ok {
-		t.Fatal("Cannot get current filename")
-	}
-
-	testData := filepath.Join(filepath.Dir(filename), "test", "data", "dict")
-
-	_, err := New(testData)
-	if err != nil {
-		t.Fatal("Cannot create ChineseSegmentation")
-	}
-}
 
 func Test_getRuneArrayFromString(t *testing.T) {
 	output := getRuneArrayFromString("測試")
@@ -46,5 +33,36 @@ func Test_getRuneArrayFromString(t *testing.T) {
 
 	if output[1] != 35430 {
 		t.Errorf("output[0] = %d shall be 35430", output[1])
+	}
+}
+
+func Test_getAllSegmentationFromRune(t *testing.T) {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("Cannot get current filename")
+	}
+
+	testData := filepath.Join(filepath.Dir(filename), "test", "data", "dict")
+
+	this, err := New(testData)
+	if err != nil {
+		t.Fatal("Cannot create ChineseSegmentation")
+	}
+
+	res := this.getAllSegmentationFromRune(getRuneArrayFromString("自由和平等"))
+
+	expected := []Segmentation{
+		{0, 1},
+		{0, 2}, // 自由
+		{1, 1},
+		{2, 1},
+		{2, 2}, // 和平
+		{3, 1},
+		{3, 2}, // 平等
+		{4, 1},
+	}
+
+	if !reflect.DeepEqual(res, expected) {
+		t.Fatal("res is not expected value")
 	}
 }

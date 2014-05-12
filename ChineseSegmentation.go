@@ -29,6 +29,11 @@ type ChineseSegmentation struct {
 	dict *TrieNode
 }
 
+type Segmentation struct {
+	start  int
+	length int
+}
+
 func newTrieNode() (this *TrieNode) {
 	this = new(TrieNode)
 	this.children = make(map[rune]*TrieNode)
@@ -82,6 +87,35 @@ func getRuneArrayFromString(input string) (output []rune) {
 	return output
 }
 
-func (this *ChineseSegmentation) Cut(input string) (phrase []string) {
-	return phrase
+func (this *ChineseSegmentation) getAllSegmentationFromRune(input []rune) (output []Segmentation) {
+	output = make([]Segmentation, 0)
+
+	for i := 0; i < len(input); i++ {
+		output = append(output, Segmentation{i, 1})
+
+		curr, ok := this.dict.children[input[i]]
+		if !ok {
+			continue
+		}
+
+		for j := i + 1; j < len(input); j++ {
+			curr, ok = curr.children[input[j]]
+			if !ok {
+				break
+			}
+
+			if curr.isValidSegmentation {
+				output = append(output, Segmentation{i, j - i + 1})
+			}
+		}
+	}
+
+	return output
+}
+
+func (this *ChineseSegmentation) GetSegmentation(input string) (segmentation []string) {
+	inputRune := getRuneArrayFromString(input)
+	_ = this.getAllSegmentationFromRune(inputRune)
+
+	return segmentation
 }
