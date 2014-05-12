@@ -32,3 +32,19 @@ func Test_New(t *testing.T) {
 		t.Fatal("Cannot create ChineseSegmentation")
 	}
 }
+
+func Test_getRuneArrayFromString(t *testing.T) {
+	output := getRuneArrayFromString("測試")
+
+	if len(output) != 2 {
+		t.Fatal("len(output) shall be 2")
+	}
+
+	if output[0] != 28204 {
+		t.Errorf("output[0] = %d shall be 28204", output[0])
+	}
+
+	if output[1] != 35430 {
+		t.Errorf("output[0] = %d shall be 35430", output[1])
+	}
+}

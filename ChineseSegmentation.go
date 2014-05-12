@@ -17,6 +17,7 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"unicode/utf8"
 )
 
 type TrieNode struct {
@@ -69,4 +70,18 @@ func New(dict string) (this *ChineseSegmentation, err error) {
 	}
 
 	return this, nil
+}
+
+func getRuneArrayFromString(input string) (output []rune) {
+	output = make([]rune, 0, utf8.RuneCountInString(input))
+
+	for _, c := range input {
+		output = append(output, c)
+	}
+
+	return output
+}
+
+func (this *ChineseSegmentation) Cut(input string) (phrase []string) {
+	return phrase
 }
