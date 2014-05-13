@@ -30,14 +30,19 @@ type ChineseSegmentation struct {
 }
 
 type Segmentation struct {
-	start int
-	end   int
+	start    int
+	end      int
+	isUnique bool
 }
 
 func newTrieNode() (this *TrieNode) {
 	this = new(TrieNode)
 	this.children = make(map[rune]*TrieNode)
 	return this
+}
+
+func newSegmentation(start int, end int) (this Segmentation) {
+	return Segmentation{start, end, false}
 }
 
 func New(dict string) (this *ChineseSegmentation, err error) {
@@ -91,7 +96,7 @@ func (this *ChineseSegmentation) getAllSegmentationFromRune(input []rune) (outpu
 	output = make([]Segmentation, 0)
 
 	for i := 0; i < len(input); i++ {
-		output = append(output, Segmentation{i, 1})
+		output = append(output, newSegmentation(i, 1))
 
 		curr, ok := this.dict.children[input[i]]
 		if !ok {
@@ -105,7 +110,7 @@ func (this *ChineseSegmentation) getAllSegmentationFromRune(input []rune) (outpu
 			}
 
 			if curr.isValidSegmentation {
-				output = append(output, Segmentation{i, j - 1})
+				output = append(output, newSegmentation(i, j-1))
 			}
 		}
 	}

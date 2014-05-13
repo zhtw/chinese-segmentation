@@ -69,14 +69,14 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 	res := this.getAllSegmentationFromRune(getRuneArrayFromString("自由和平等"))
 
 	expected := []Segmentation{
-		{0, 1},
-		{0, 2}, // 自由
-		{1, 2},
-		{2, 3},
-		{2, 4}, // 和平
-		{3, 4},
-		{3, 5}, // 平等
-		{4, 5},
+		newSegmentation(0, 1),
+		newSegmentation(0, 2),
+		newSegmentation(1, 2),
+		newSegmentation(2, 3),
+		newSegmentation(2, 4),
+		newSegmentation(3, 4),
+		newSegmentation(3, 5),
+		newSegmentation(4, 5),
 	}
 
 	if compareSegmentationRange(res, expected) {
@@ -86,14 +86,14 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 
 func Test_isUniqueSegmentation(t *testing.T) {
 	input := []Segmentation{
-		{0, 1}, // removed
-		{0, 2}, // unique
-		{1, 2}, // removed
-		{2, 3}, // keep
-		{2, 4}, // not unique
-		{3, 4}, // removed
-		{3, 5}, // not unique
-		{4, 5}, // keep
+		newSegmentation(0, 1), // removed
+		newSegmentation(0, 2), // unique
+		newSegmentation(1, 2), // removed
+		newSegmentation(2, 3), // keep
+		newSegmentation(2, 4), // not unique
+		newSegmentation(3, 4), // removed
+		newSegmentation(3, 5), // not unique
+		newSegmentation(4, 5), // keep
 	}
 
 	if !isUniqueSegmentation(input, 1) {
@@ -111,23 +111,23 @@ func Test_isUniqueSegmentation(t *testing.T) {
 
 func Test_removeUnusedSegmentation(t *testing.T) {
 	input := []Segmentation{
-		{0, 1}, // removed
-		{0, 2}, // unique
-		{1, 2}, // removed
-		{2, 3}, // keep
-		{2, 4}, // not unique
-		{3, 4}, // removed
-		{3, 5}, // not unique
-		{4, 5}, // keep
+		newSegmentation(0, 1), // removed
+		newSegmentation(0, 2), // unique
+		newSegmentation(1, 2), // removed
+		newSegmentation(2, 3), // keep
+		newSegmentation(2, 4), // not unique
+		newSegmentation(3, 4), // removed
+		newSegmentation(3, 5), // not unique
+		newSegmentation(4, 5), // keep
 	}
 
 	expected := []Segmentation{
-		{0, 2}, // unique
-		{2, 3}, // keep
-		{2, 4}, // not unique
-		{3, 4}, // removed
-		{3, 5}, // not unique
-		{4, 5}, // keep
+		newSegmentation(0, 2), // unique
+		newSegmentation(2, 3), // keep
+		newSegmentation(2, 4), // not unique
+		newSegmentation(3, 4), // removed
+		newSegmentation(3, 5), // not unique
+		newSegmentation(4, 5), // keep
 	}
 
 	output := removeUnusedSegmentation(input)
