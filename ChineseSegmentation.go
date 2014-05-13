@@ -174,6 +174,14 @@ func removeUnusedSegmentation(input []Segmentation) (output []Segmentation) {
 		}
 	}
 
+	output = make([]Segmentation, 0, len(input))
+
+	for i, _ := range input {
+		if !removeFlags[i] {
+			output = append(output, input[i])
+		}
+	}
+
 	return output
 }
 

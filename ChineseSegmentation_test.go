@@ -85,7 +85,7 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 }
 
 func Test_isUniqueSegmentation(t *testing.T) {
-	data := []Segmentation{
+	input := []Segmentation{
 		{0, 1}, // removed
 		{0, 2}, // unique
 		{1, 2}, // removed
@@ -96,15 +96,42 @@ func Test_isUniqueSegmentation(t *testing.T) {
 		{4, 5}, // keep
 	}
 
-	if !isUniqueSegmentation(data, 1) {
-		t.Error("data[1] shall be unique")
+	if !isUniqueSegmentation(input, 1) {
+		t.Error("input[1] shall be unique")
 	}
 
-	if isUniqueSegmentation(data, 4) {
-		t.Error("data[4] shall not be unique")
+	if isUniqueSegmentation(input, 4) {
+		t.Error("input[4] shall not be unique")
 	}
 
-	if isUniqueSegmentation(data, 6) {
-		t.Error("data[6] shall not be unique")
+	if isUniqueSegmentation(input, 6) {
+		t.Error("input[6] shall not be unique")
+	}
+}
+
+func Test_removeUnusedSegmentation(t *testing.T) {
+	input := []Segmentation{
+		{0, 1}, // removed
+		{0, 2}, // unique
+		{1, 2}, // removed
+		{2, 3}, // keep
+		{2, 4}, // not unique
+		{3, 4}, // removed
+		{3, 5}, // not unique
+		{4, 5}, // keep
+	}
+
+	expected := []Segmentation{
+		{0, 2}, // unique
+		{2, 3}, // keep
+		{2, 4}, // not unique
+		{3, 4}, // removed
+		{3, 5}, // not unique
+		{4, 5}, // keep
+	}
+
+	output := removeUnusedSegmentation(input)
+	if !compareSegmentationRange(output, expected) {
+		t.Error("output is not expected value")
 	}
 }
