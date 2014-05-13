@@ -113,9 +113,75 @@ func (this *ChineseSegmentation) getAllSegmentationFromRune(input []rune) (outpu
 	return output
 }
 
+func isUniqueSegmentation(input []Segmentation, index int) bool {
+	for i, item := range input {
+		if i == index {
+			continue
+		}
+
+		// contain
+		if input[index].start <= item.start &&
+			item.end <= input[index].end {
+			continue
+		}
+
+		if input[index].end <= item.start {
+			continue
+		}
+
+		if item.end <= input[index].start {
+			continue
+		}
+
+		return false
+	}
+	return true
+}
+
+func removeUnusedSegmentation(input []Segmentation) (output []Segmentation) {
+	removeFlags := make([]bool, len(input))
+
+	/*
+	 * Segmentation A contains B means the following conditions are all
+	 * true:
+	 *
+	 *     A.start <= B.start
+	 *     B.end <= A.end
+	 *
+	 * Segmentation A interleave B means one of the following conditions is
+	 * true:
+	 *
+	 *     A.start <= B.start < A.end
+	 *     B.start <= A.start < B.end
+	 */
+
+	/*
+	 * For segmentation A, if all other segmentations are either contained
+	 * by A, or are not onterleaved with A, segmentation A is called unique
+	 * and all segmentation contained by A will be marked as remove.
+	 */
+	for i, _ := range input {
+		if !isUniqueSegmentation(input, i) {
+			continue
+		}
+
+		for j, _ := range input {
+			if i != j &&
+				input[i].start <= input[j].start &&
+				input[j].end <= input[i].end {
+				removeFlags[j] = true
+			}
+		}
+	}
+
+	return output
+}
+
 func (this *ChineseSegmentation) GetSegmentation(input string) (segmentation []string) {
+
 	inputRune := getRuneArrayFromString(input)
-	_ = this.getAllSegmentationFromRune(inputRune)
+	allSegs := this.getAllSegmentationFromRune(inputRune)
+	_ = removeUnusedSegmentation(allSegs)
 
 	return segmentation
 }

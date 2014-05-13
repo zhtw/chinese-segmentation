@@ -83,3 +83,28 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 		t.Fatal("res is not expected value")
 	}
 }
+
+func Test_isUniqueSegmentation(t *testing.T) {
+	data := []Segmentation{
+		{0, 1}, // removed
+		{0, 2}, // unique
+		{1, 2}, // removed
+		{2, 3}, // keep
+		{2, 4}, // not unique
+		{3, 4}, // removed
+		{3, 5}, // not unique
+		{4, 5}, // keep
+	}
+
+	if !isUniqueSegmentation(data, 1) {
+		t.Error("data[1] shall be unique")
+	}
+
+	if isUniqueSegmentation(data, 4) {
+		t.Error("data[4] shall not be unique")
+	}
+
+	if isUniqueSegmentation(data, 6) {
+		t.Error("data[6] shall not be unique")
+	}
+}
