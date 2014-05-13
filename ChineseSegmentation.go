@@ -30,8 +30,8 @@ type ChineseSegmentation struct {
 }
 
 type Segmentation struct {
-	start  int
-	length int
+	start int
+	end   int
 }
 
 func newTrieNode() (this *TrieNode) {
@@ -105,7 +105,7 @@ func (this *ChineseSegmentation) getAllSegmentationFromRune(input []rune) (outpu
 			}
 
 			if curr.isValidSegmentation {
-				output = append(output, Segmentation{i, j - i + 1})
+				output = append(output, Segmentation{i, j - 1})
 			}
 		}
 	}

@@ -15,7 +15,6 @@ package chinesesegmentation
 
 import (
 	"path/filepath"
-	"reflect"
 	"runtime"
 	"testing"
 )
@@ -36,6 +35,24 @@ func Test_getRuneArrayFromString(t *testing.T) {
 	}
 }
 
+func compareSegmentationRange(x []Segmentation, y []Segmentation) bool {
+	if len(x) != len(y) {
+		return false
+	}
+
+	for i, _ := range x {
+		if x[i].start != y[i].start {
+			return false
+		}
+
+		if x[i].end != y[i].end {
+			return false
+		}
+	}
+
+	return true
+}
+
 func Test_getAllSegmentationFromRune(t *testing.T) {
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
@@ -54,15 +71,15 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 	expected := []Segmentation{
 		{0, 1},
 		{0, 2}, // 自由
-		{1, 1},
-		{2, 1},
-		{2, 2}, // 和平
-		{3, 1},
-		{3, 2}, // 平等
-		{4, 1},
+		{1, 2},
+		{2, 3},
+		{2, 4}, // 和平
+		{3, 4},
+		{3, 5}, // 平等
+		{4, 5},
 	}
 
-	if !reflect.DeepEqual(res, expected) {
+	if compareSegmentationRange(res, expected) {
 		t.Fatal("res is not expected value")
 	}
 }
