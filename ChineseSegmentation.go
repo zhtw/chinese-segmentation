@@ -16,6 +16,7 @@ package chinesesegmentation
 import (
 	"bufio"
 	"os"
+	"sort"
 	"strings"
 	"unicode/utf8"
 )
@@ -33,6 +34,24 @@ type Segmentation struct {
 	start    int
 	end      int
 	isUnique bool
+}
+
+type SegmentationArray []Segmentation
+
+func (this SegmentationArray) Len() int {
+	return len(this)
+}
+
+func (this SegmentationArray) Less(i int, j int) bool {
+	if this[i].end < this[j].end {
+		return true
+	}
+
+	return false
+}
+
+func (this SegmentationArray) Swap(i int, j int) {
+	this[i], this[j] = this[j], this[i]
 }
 
 func newTrieNode() (this *TrieNode) {
@@ -190,11 +209,57 @@ func removeUnusedSegmentation(input []Segmentation) (output []Segmentation) {
 	return output
 }
 
-func (this *ChineseSegmentation) GetSegmentation(input string) (segmentation []string) {
+func getScore(seg []Segmentation) int {
+	/*
+	 * Set score = 1 to ensure it can override no segmentation, which has
+	 * score 0.
+	 */
+	score := 1
 
+	for _, item := range seg {
+		if item.end-item.start > 1 {
+			score += 1000
+		}
+	}
+
+	return score
+}
+
+func getBestSegmentation(length int, allSegs []Segmentation) (output []Segmentation) {
+	sort.Sort(SegmentationArray(allSegs))
+
+	segCache := make([][]Segmentation, length+1)
+	scoreCache := make([]int, length+1)
+
+	segIndex := 0
+	for end := 1; end <= length; end++ {
+		for ; segIndex < len(allSegs); segIndex++ {
+			if allSegs[segIndex].end > end {
+				break
+			}
+
+			newSeg := append(segCache[allSegs[segIndex].start], allSegs[segIndex])
+			newScore := getScore(newSeg)
+
+			if newScore > scoreCache[end] {
+				segCache[end] = newSeg
+				scoreCache[end] = newScore
+			}
+		}
+	}
+
+	return segCache[length]
+}
+
+func generateSegmentationString(inputRune []rune, seg []Segmentation) (output []string) {
+	panic("Not implemented")
+	return output
+}
+
+func (this *ChineseSegmentation) GetSegmentation(input string) []string {
 	inputRune := getRuneArrayFromString(input)
 	allSegs := this.getAllSegmentationFromRune(inputRune)
-	_ = removeUnusedSegmentation(allSegs)
-
-	return segmentation
+	allSegs = removeUnusedSegmentation(allSegs)
+	bestSegs := getBestSegmentation(len(inputRune), allSegs)
+	return generateSegmentationString(inputRune, bestSegs)
 }

@@ -66,7 +66,7 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 		t.Fatal("Cannot create ChineseSegmentation")
 	}
 
-	res := this.getAllSegmentationFromRune(getRuneArrayFromString("自由和平等"))
+	output := this.getAllSegmentationFromRune(getRuneArrayFromString("自由和平等"))
 
 	expected := []Segmentation{
 		newSegmentation(0, 1),
@@ -79,8 +79,8 @@ func Test_getAllSegmentationFromRune(t *testing.T) {
 		newSegmentation(4, 5),
 	}
 
-	if compareSegmentationRange(res, expected) {
-		t.Fatal("res is not expected value")
+	if compareSegmentationRange(output, expected) {
+		t.Fatal("output is not expected value: %s", output)
 	}
 }
 
@@ -132,6 +132,46 @@ func Test_removeUnusedSegmentation(t *testing.T) {
 
 	output := removeUnusedSegmentation(input)
 	if !compareSegmentationRange(output, expected) {
-		t.Error("output is not expected value")
+		t.Error("output is not expected value: %s", output)
+	}
+}
+
+func Test_getBestSegmentation(t *testing.T) {
+	input := []Segmentation{
+		newSegmentation(0, 2),
+		newSegmentation(2, 4),
+		newSegmentation(0, 3),
+		newSegmentation(3, 4),
+	}
+
+	expected := []Segmentation{
+		newSegmentation(0, 2),
+		newSegmentation(2, 4),
+	}
+
+	output := getBestSegmentation(4, input)
+	if !compareSegmentationRange(output, expected) {
+		t.Errorf("output is not expected value: %s", output)
+	}
+}
+
+func Test_getBestSegmentation_OnlyLengthOneSegmentation(t *testing.T) {
+	input := []Segmentation{
+		newSegmentation(3, 4),
+		newSegmentation(2, 3),
+		newSegmentation(1, 2),
+		newSegmentation(0, 1),
+	}
+
+	expected := []Segmentation{
+		newSegmentation(0, 1),
+		newSegmentation(1, 2),
+		newSegmentation(2, 3),
+		newSegmentation(3, 4),
+	}
+
+	output := getBestSegmentation(4, input)
+	if !compareSegmentationRange(output, expected) {
+		t.Errorf("output is not expected value: %s", output)
 	}
 }
